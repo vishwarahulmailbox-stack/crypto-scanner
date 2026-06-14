@@ -1,4 +1,4 @@
-name: CE Scanner
+name: Crypto Scanner
 
 on:
   schedule:
