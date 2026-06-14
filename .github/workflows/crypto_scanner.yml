@@ -1,0 +1,41 @@
+name: CE Scanner
+
+on:
+  schedule:
+    # IST = UTC+5:30, so:
+    # 02:00 PM IST = 08:30 UTC
+    - cron: '30 5 * * 1-5'    # 02:00 PM IST  Mon-Fri
+
+  # Manual run button bhi hoga GitHub pe
+  workflow_dispatch:
+
+jobs:
+  scan:
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: pip install yfinance pandas numpy pytz
+
+      - name: Run Crypto Scanner
+        run: python crypto_scanner.py
+
+      - name: Commit docs to main
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add docs/
+          git commit -m "Crypto Scanner — ${{ github.run_number }}"
+          git push origin main
+          
